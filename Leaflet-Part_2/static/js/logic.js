@@ -5,9 +5,35 @@ let myMap = L.map("map",{
 });
 
 // Adding the tile layer
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
+
+let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+}).addTo(myMap);
+
+let satellite = L.tileLayer('https://tiles.openaerialmap.org/5d9e2f22bc3c3a001ff4383d/0/5d9e2f22bc3c3a001ff4383e/{z}/{x}/{y}.png', {
+    attribution: 'Map data: &copy; <a href="https://openaerialmap.org">OpenAerialMap</a>'
+}).addTo(myMap);
+
+// Define an empty layer group for earthquake markers
+let earthquakeLayer = L.layerGroup();
+
+// Only one base layer can be shown at a time.
+let baseMaps = {
+    "Street View": street,
+    "Topography View": topo,
+    "Satellite View": satellite
+};
+
+// Overlays that can be toggled on or off
+let overlayMaps = {
+    "Earthquakes": earthquakeLayer
+};
+
+// Add the layer control to the map.
+L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 
 // Store the API query variables.
 let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
