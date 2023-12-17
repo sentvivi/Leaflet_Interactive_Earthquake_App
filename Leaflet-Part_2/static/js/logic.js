@@ -1,11 +1,28 @@
-// Creating the map object:
+// Use the Mapbox token from the imported config file
+let mapboxToken = apiKey;
+
+// Creating the map object
 let myMap = L.map("map",{
     center:[39.137,-115.143],
     zoom: 6
 });
 
+
 // Adding the tile layer
-let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+let satellite = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/satellite-v9',
+    accessToken: mapboxToken
+}).addTo(myMap);
+
+let grayscale = L.tileLayer('https://api.mapbox.com/styles/v1/{style}/tiles/{z}/{x}/{y}?access_token={access_token}', {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    style:    'mapbox/light-v11',
+    access_token: mapboxToken
+}).addTo(myMap);
+
+let outdoors = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
@@ -13,30 +30,31 @@ let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
 	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 }).addTo(myMap);
 
-let satellite = L.tileLayer('https://tiles.openaerialmap.org/5d9e2f22bc3c3a001ff4383d/0/5d9e2f22bc3c3a001ff4383e/{z}/{x}/{y}.png', {
-    attribution: 'Map data: &copy; <a href="https://openaerialmap.org">OpenAerialMap</a>'
-}).addTo(myMap);
-
 // Define an empty layer group for earthquake markers
 let earthquakeLayer = L.layerGroup();
-
-// Only one base layer can be shown at a time.
+let tectonicLayer = L.layerGroup();
+// Only one base layer can be shown at a time
 let baseMaps = {
-    "Street View": street,
+ //   "Street View": street,
+    
+    "Satellite View": satellite,
+    "Grayscale": grayscale,
+    "Outdoors": outdoors,
     "Topography View": topo,
-    "Satellite View": satellite
 };
 
 // Overlays that can be toggled on or off
 let overlayMaps = {
-    "Earthquakes": earthquakeLayer
+    "Earthquakes": earthquakeLayer, 
+    "Tectonic Plates": tectonicLayer,
 };
 
-// Add the layer control to the map.
+// Add the layer control to the map
 L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 
-// Store the API query variables.
+// Store the API query variables
 let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+let tectonicplatesUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
 // Define colors for depth levels
 let getColor = depth => {
@@ -60,6 +78,23 @@ function circle(point, latlng) {
             radius: mag * 20000
     })
 }
+
+// Function to add tectonic plates to the map
+function addTectonicPlates() {
+    fetch(tectonicplatesUrl)
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: {
+                    color: "#FFA500",
+                    weight: 2
+                }
+            }).addTo(tectonicLayer); // Add tectonic plates to the tectonicLayer
+        })
+}
+// Call the function to add tectonic plates to the map
+addTectonicPlates();
+
 // Define legend content
 let legend = L.control({ position: "bottomright" });
 
@@ -86,7 +121,7 @@ d3.json(url).then(data => {
         let { mag, place } = properties;
         let depth = coordinates[2];
         // Define marker options based on magnitude and depth
-        const markerOptions = {
+        let markerOptions = {
             radius: mag * 5, // Adjust radius based on magnitude
             fillColor: getColor(depth), // Adjust color based on depth
             color: '#000',
@@ -97,8 +132,9 @@ d3.json(url).then(data => {
 
         // Create a marker and bind a popup with earthquake information
         let marker = L.circleMarker([coordinates[1], coordinates[0]], markerOptions)
-            .bindPopup(`<b>Location:</b> ${properties.place}<br><b>Magnitude:</b> ${mag}<br><b>Depth:</b> ${depth} km`)
-            .addTo(myMap);
+            .bindPopup(`<b>Location:</b> ${properties.place}<br><b>Magnitude:</b> ${mag}<br><b>Depth:</b> ${depth} km`);
+        // Add the marker to the earthquakeLayer
+        marker.addTo(earthquakeLayer);
     });
 
 });

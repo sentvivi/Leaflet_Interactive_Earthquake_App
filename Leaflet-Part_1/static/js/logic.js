@@ -60,7 +60,7 @@ d3.json(url).then(data => {
         let { mag, place } = properties;
         let depth = coordinates[2];
         // Define marker options based on magnitude and depth
-        const markerOptions = {
+        let markerOptions = {
             radius: mag * 5, // Adjust radius based on magnitude
             fillColor: getColor(depth), // Adjust color based on depth
             color: '#000',
