@@ -33,10 +33,9 @@ let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
 // Define an empty layer group for earthquake markers
 let earthquakeLayer = L.layerGroup();
 let tectonicLayer = L.layerGroup();
+
 // Only one base layer can be shown at a time
 let baseMaps = {
- //   "Street View": street,
-    
     "Satellite View": satellite,
     "Grayscale": grayscale,
     "Outdoors": outdoors,
@@ -50,7 +49,7 @@ let overlayMaps = {
 };
 
 // Add the layer control to the map
-L.control.layers(baseMaps, overlayMaps).addTo(myMap);
+L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(myMap);
 
 // Store the API query variables
 let url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
