@@ -12,20 +12,21 @@ This activity are broken into two parts
         2. Import and Visualize Data:
             Utilize Leaflet to create a map that displays all earthquakes from the dataset by their longitude and latitude. Create markers that represent earthquake magnitudes using their size and color to indicate earthquake depth. Larger markers will denote higher magnitudes, while darker colors will signify greater depth.
                 
-![Alt Text](result/StreetView.PNG)
+![Alt Text](Result/StreetView.PNG)
 
     Part 2: Additional Data Gathering and Visualization
         Plot a secondary dataset on the map to showcase the correlation between tectonic plates and seismic activity. This requires integrating this dataset alongside the original one. Incorporate other base maps for selection. Organize each dataset into distinct overlays that can be independently toggled. Add layer controls to the map interface, allowing selection between satellite, outdoor, and topoview, with overlay checkboxes for both the tectonic plates and earthquakes datasets. 
 
-![Alt Text](result/satelliteView.PNG)
+![Alt Text](Result/satelliteView.PNG)
 
-![Alt Text](result/OutdoorView.PNG)
+![Alt Text](Result/OutdoorView.PNG)
 
-![Alt Text](result/topoView.PNG)
+![Alt Text](Result/topoView.PNG)
 
-The websit for part 1: 
+The websit for part 1: https://sentvivi.github.io/Leaflet_Interactive_Earthquake_App/Leaflet-Part_1/
 
-The website for part 2 (required token):
+The website for part 2: (required token): https://sentvivi.github.io/Leaflet_Interactive_Earthquake_App/Leaflet-Part_2/
+    
     To include the necessary token, create a config.js file containing the following code:
         const apiKey = 'Your Token';
         Replace 'Your Token' with the actual token required from https://api.mapbox.com/
